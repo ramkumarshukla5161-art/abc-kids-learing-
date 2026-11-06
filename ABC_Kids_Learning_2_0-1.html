@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ff9800">
+<title>ABC Kids Learning 2.0</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Devanagari",sans-serif;background:#fff8e8;color:#263238}
+header{background:linear-gradient(120deg,#ff9800,#ff5722);color:white;text-align:center;padding:20px 12px}
+h1{margin:0;font-size:27px}header p{margin:7px 0 0}
+nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:12px;background:#fff}
+button{border:0;border-radius:12px;padding:12px 15px;font-size:16px;font-weight:bold;cursor:pointer}
+nav button{background:#ffe0b2;color:#633500}
+nav button.active{background:#ff9800;color:white}
+main{max-width:850px;margin:auto;padding:14px}
+.panel{display:none;background:white;border-radius:18px;padding:18px;margin:10px 0;box-shadow:0 3px 12px #00000012;text-align:center}
+.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:12px}
+.card{background:#fff3e0;border-radius:15px;padding:15px 8px;min-height:105px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px}
+.big{font-size:42px;font-weight:bold}.emoji{font-size:38px}.card button,.action{background:#4caf50;color:white}
+.small{font-size:14px;color:#546e7a}
+select{padding:10px;border-radius:10px;border:1px solid #bbb;font-size:16px}
+#quizQuestion{font-size:25px;font-weight:bold;margin:20px 0}
+#quizOptions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:420px;margin:15px auto}
+#quizOptions button{background:#e3f2fd;color:#16456b}
+#feedback{font-size:20px;font-weight:bold;min-height:30px}
+footer{text-align:center;padding:18px;color:#607d8b;font-size:13px}
+</style>
+</head>
+<body>
+<header><h1>🌈 ABC Kids Learning 2.0</h1><p>खेल-खेल में सीखें • Learn with Fun</p></header>
+<nav>
+<button class="active" onclick="showTab('abc',this)">🔤 ABCD</button>
+<button onclick="showTab('count',this)">🔢 गिनती</button>
+<button onclick="showTab('colors',this)">🎨 रंग</button>
+<button onclick="showTab('animals',this)">🐘 जानवर</button>
+<button onclick="showTab('fruits',this)">🍎 फल</button>
+<button onclick="showTab('quiz',this)">🧠 Quiz</button>
+<button onclick="showTab('habits',this)">⭐ अच्छी आदतें</button>
+</nav>
+<main>
+<section id="abc" class="panel active"><h2>अंग्रेज़ी वर्णमाला (A–Z)</h2><p class="small">किसी अक्षर पर टैप करके सुनें।</p><div id="abcGrid" class="grid"></div></section>
+<section id="count" class="panel"><h2>गिनती 1 से 100</h2><p class="small">किसी संख्या को दबाकर सुनें।</p><div id="countGrid" class="grid"></div></section>
+<section id="colors" class="panel"><h2>रंगों के नाम (Colours)</h2><div id="colorGrid" class="grid"></div></section>
+<section id="animals" class="panel"><h2>जानवरों के नाम (Animals)</h2><div id="animalGrid" class="grid"></div></section>
+<section id="fruits" class="panel"><h2>फलों के नाम (Fruits)</h2><div id="fruitGrid" class="grid"></div></section>
+<section id="quiz" class="panel"><h2>मज़ेदार प्रश्नोत्तरी (Quiz)</h2><div id="quizQuestion">तैयार हैं?</div><div id="quizOptions"></div><div id="feedback"></div><button class="action" onclick="newQuiz()">अगला प्रश्न</button></section>
+<section id="habits" class="panel"><h2>अच्छी आदतें (Good Habits)</h2><div id="habitGrid" class="grid"></div></section>
+<div style="text-align:center;margin:18px"><button class="action" onclick="speak('नमस्ते बच्चों! ABC Kids Learning में आपका स्वागत है। चलिए आज कुछ नया सीखते हैं।')">🔊 स्वागत संदेश सुनें</button></div>
+</main>
+<footer>ABC Kids Learning 2.0 • बच्चों के सीखने के लिए</footer>
+<script>
+function showTab(id,btn){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
+function speak(text,lang='hi-IN'){
+ try{
+  if(!('speechSynthesis' in window)){alert('इस WebView में आवाज़ उपलब्ध नहीं है। Android में Google Text-to-Speech चालू करें।');return}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=0.82;u.pitch=1.05;
+  const voices=window.speechSynthesis.getVoices();
+  const match=voices.find(v=>v.lang.toLowerCase().startsWith(lang.slice(0,2).toLowerCase()));
+  if(match)u.voice=match;
+  window.speechSynthesis.speak(u);
+ }catch(e){alert('आवाज़ शुरू नहीं हो सकी।')}
+}
+function card(container,emoji,title,sub,voice,lang='hi-IN'){
+ const d=document.createElement('div');d.className='card';
+ d.innerHTML=`<div class="emoji">${emoji}</div><div><b>${title}</b></div><div class="small">${sub||''}</div><button type="button">🔊 सुनें</button>`;
+ d.querySelector('button').addEventListener('click',()=>speak(voice,lang));document.getElementById(container).appendChild(d)
+}
+const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const words=['Apple','Ball','Cat','Dog','Elephant','Fish','Grapes','Horse','Ice cream','Jug','Kite','Lion','Mango','Nest','Orange','Parrot','Queen','Rabbit','Sun','Tiger','Umbrella','Van','Watch','Xylophone','Yak','Zebra'];
+letters.forEach((l,i)=>card('abcGrid',l,l+' for '+words[i],words[i],l+' for '+words[i]+'. '+words[i],'en-US'));
+for(let i=1;i<=100;i++)card('countGrid','🔢',String(i),'Number',String(i),'en-US');
+const colors=[['🔴','लाल','Red','लाल रंग, Red'],['🔵','नीला','Blue','नीला रंग, Blue'],['🟢','हरा','Green','हरा रंग, Green'],['🟡','पीला','Yellow','पीला रंग, Yellow'],['🟠','नारंगी','Orange','नारंगी रंग, Orange'],['🟣','बैंगनी','Purple','बैंगनी रंग, Purple'],['⚫','काला','Black','काला रंग, Black'],['⚪','सफेद','White','सफेद रंग, White'],['🟤','भूरा','Brown','भूरा रंग, Brown'],['🩷','गुलाबी','Pink','गुलाबी रंग, Pink']];
+colors.forEach(x=>card('colorGrid',x[0],x[1],x[2],x[3]));
+const animals=[['🐘','हाथी','Elephant'],['🦁','शेर','Lion'],['🐯','बाघ','Tiger'],['🐒','बंदर','Monkey'],['🐄','गाय','Cow'],['🐕','कुत्ता','Dog'],['🐈','बिल्ली','Cat'],['🐘','Elephant','Elephant'],['🐎','घोड़ा','Horse'],['🐐','बकरी','Goat'],['🐪','ऊँट','Camel'],['🐻','भालू','Bear'],['🦒','जिराफ','Giraffe'],['🐇','खरगोश','Rabbit']];
+animals.forEach(x=>card('animalGrid',x[0],x[1],x[2],x[1]+'. '+x[2]));
+const fruits=[['🍎','सेब','Apple'],['🍌','केला','Banana'],['🥭','आम','Mango'],['🍇','अंगूर','Grapes'],['🍊','संतरा','Orange'],['🍉','तरबूज','Watermelon'],['🍍','अनानास','Pineapple'],['🍓','स्ट्रॉबेरी','Strawberry'],['🍐','नाशपाती','Pear'],['🍒','चेरी','Cherry'],['🥥','नारियल','Coconut'],['🍋','नींबू','Lemon']];
+fruits.forEach(x=>card('fruitGrid',x[0],x[1],x[2],x[1]+'. '+x[2]));
+const habits=[['🪥','रोज़ दाँत साफ करें','Brush your teeth every day.'],['🧼','खाने से पहले हाथ धोएँ','Wash your hands before eating.'],['📚','रोज़ पढ़ाई करें','Study every day.'],['🙏','बड़ों का सम्मान करें','Respect your elders.'],['🚰','पानी बचाएँ','Save water.'],['🗑️','कूड़ा कूड़ेदान में डालें','Put waste in the dustbin.']];
+habits.forEach(x=>card('habitGrid',x[0],x[1],'Good Habit',x[1]+'. '+x[2]));
+const quizzes=[{q:'Apple कौन-सा फल है?',o:['सेब','केला','आम','अंगूर'],a:'सेब'},{q:'A for क्या होता है?',o:['Ball','Apple','Cat','Dog'],a:'Apple'},{q:'आसमान का रंग कैसा दिखता है?',o:['हरा','नीला','काला','गुलाबी'],a:'नीला'},{q:'2 + 3 कितने होते हैं?',o:['4','5','6','7'],a:'5'},{q:'जंगल का राजा किसे कहते हैं?',o:['हाथी','शेर','बंदर','घोड़ा'],a:'शेर'}];
+let qi=0;
+function newQuiz(){qi=Math.floor(Math.random()*quizzes.length);let q=quizzes[qi];document.getElementById('quizQuestion').textContent=q.q;document.getElementById('feedback').textContent='';let box=document.getElementById('quizOptions');box.innerHTML='';q.o.forEach(v=>{let b=document.createElement('button');b.textContent=v;b.onclick=()=>{let ok=v===q.a;document.getElementById('feedback').textContent=ok?'🎉 शाबाश! सही जवाब।':'😊 फिर कोशिश करें। सही जवाब: '+q.a;speak(ok?'शाबाश! सही जवाब।':'फिर कोशिश करें। सही जवाब है '+q.a)};box.appendChild(b)})}
+newQuiz();
+if('speechSynthesis' in window){speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
+</script>
+</body></html>
